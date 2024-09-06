@@ -698,7 +698,13 @@ function drupal_http_request($url, $headers = array(), $method = 'GET', $data = 
 function drupal_error_handler($errno, $message, $filename, $line, $context = NULL) {
   // If the @ error suppression operator was used, error_reporting will have
   // been temporarily set to 0.
-  if (error_reporting() == 0) {
+  // If the @ error suppression operator was used, error_reporting will have
+  // been temporarily set to 0.
+  if (PHP_MAJOR_VERSION <= 7 && error_reporting() == 0) {
+    return;
+  }
+  // In PHP 8, it is set to E_ERROR | E_CORE_ERROR | E_COMPILE_ERROR | E_USER_ERROR | E_RECOVERABLE_ERROR | E_PARSE when using @.
+  if (PHP_MAJOR_VERSION >= 8 && error_reporting() === (E_ERROR | E_CORE_ERROR | E_COMPILE_ERROR | E_USER_ERROR | E_RECOVERABLE_ERROR | E_PARSE)) {
     return;
   }
 
